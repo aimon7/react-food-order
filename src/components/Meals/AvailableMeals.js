@@ -12,7 +12,7 @@ function AvailableMeals() {
         const fetchMeals = async () => {
             const response = await fetch(process.env.REACT_APP_FIREBASE_URL);
 
-            if (response.ok)
+            if (!response.ok)
                 throw new Error(`Something went wrong!`);
 
             const responseData = await response.json();
