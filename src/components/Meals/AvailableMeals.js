@@ -6,10 +6,15 @@ import {useEffect, useState} from "react";
 function AvailableMeals() {
     const [meals, setMeals] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [httpError, setHttpError] = useState(null);
 
-    useEffect( () => {
+    useEffect(() => {
         const fetchMeals = async () => {
             const response = await fetch(process.env.REACT_APP_FIREBASE_URL);
+
+            if (response.ok)
+                throw new Error(`Something went wrong!`);
+
             const responseData = await response.json();
 
             const loadedMeals = [];
@@ -25,7 +30,11 @@ function AvailableMeals() {
             setIsLoading(false);
         }
 
-        fetchMeals();
+        fetchMeals()
+            .catch(e => {
+            setIsLoading(false);
+            setHttpError(e.message);
+        });
     }, [])
 
     if (isLoading) {
@@ -36,8 +45,16 @@ function AvailableMeals() {
         )
     }
 
+    if (httpError) {
+        return (
+            <section className={classes.MealsError}>
+                <p>{httpError}</p>
+            </section>
+        )
+    }
+
     const mealsList = meals.map(meal => {
-        return <MealItem key={meal.id} id={meal.id} name={meal.name} price={meal.price} description={meal.description} />
+        return <MealItem key={meal.id} id={meal.id} name={meal.name} price={meal.price} description={meal.description}/>
     });
 
     return (
