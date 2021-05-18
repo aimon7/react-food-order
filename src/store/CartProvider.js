@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import {useReducer} from 'react';
 import CartContext from './cart-context';
 
 const defaultCartState = {
@@ -39,7 +39,7 @@ function cartReducer(state, action) {
         if (existingItem.amount === 1) {
             updatedItems = state.items.filter(item => item.id !== action.id);
         } else {
-            const updatedItem = {...existingItem, amount: existingItem.amount -1}
+            const updatedItem = {...existingItem, amount: existingItem.amount - 1}
             updatedItems = [...state.items];
             updatedItems[existingCartItemIndex] = updatedItem;
         }
@@ -48,6 +48,10 @@ function cartReducer(state, action) {
             items: updatedItems,
             totalAmount: updatedAmount
         }
+    }
+
+    if (action.type === 'CLEAR') {
+        return defaultCartState;
     }
 
     return defaultCartState;
@@ -69,12 +73,19 @@ function CartProvider(props) {
             id: id
         })
     }
+    
+    function clearCartHandler() {
+        dispatchCartAction({
+            type: 'CLEAR',
+        });
+    }
 
     const cartContext = {
         items: cartState.items,
         totalAmount: cartState.totalAmount,
         addItem: addItemToCartHandler,
-        removeItem: removeItemFromCartHandler
+        removeItem: removeItemFromCartHandler,
+        clearCart: clearCartHandler
     }
 
     return (
